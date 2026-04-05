@@ -4,17 +4,30 @@ document.addEventListener("DOMContentLoaded", () => {
   loadTasks();
 
   const searchInput = document.getElementById("search-input");
-  searchInput.addEventListener("input", (e) => {
-    const searchTerm = e.target.value.toLowerCase();
+  const priorityInput = document.getElementById("filter-priority");
 
-    const filteredTasks = tasks.filter((task) =>
-      task.title.toLowerCase().includes(searchTerm),
-    );
-    renderTasks(filteredTasks);
-  });
+  searchInput.addEventListener("input", applyFilters);
+
+  priorityInput.addEventListener("change", applyFilters);
 });
 
 let tasks = [];
+
+function applyFilters() {
+  const searchValue = document
+    .getElementById("search-input")
+    .value.toLowerCase();
+  const priorityValue = document.getElementById("filter-priority").value;
+
+  const filteredTasks = tasks.filter((task) => {
+    const matchesSearch = task.title.toLowerCase().includes(searchValue);
+    const matchesPriority =
+      priorityValue === "all" || task.priority === priorityValue;
+    return matchesSearch && matchesPriority;
+  });
+
+  renderTasks(filteredTasks);
+}
 
 function initTheme() {
   const themeToggle = document.getElementById("theme-toggle");
@@ -100,7 +113,7 @@ function loadTasks() {
     const storedTasks = localStorage.getItem("tasks");
     if (storedTasks) {
       tasks = JSON.parse(storedTasks);
-      renderTasks(tasks);
+      applyFilters();
     } else {
       renderTasks([]);
     }
@@ -134,8 +147,9 @@ function addTask() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
 
     document.getElementById("search-input").value = "";
+    document.getElementById("filter-priority").value = "all";
 
-    renderTasks(tasks);
+    applyFilters();
     form.reset();
   });
 }
@@ -148,13 +162,7 @@ function deleteTask(id) {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }
 
-  const searchTerm = document
-    .getElementById("search-input")
-    .value.toLowerCase();
-  const filteredTasks = tasks.filter((task) =>
-    task.title.toLowerCase().includes(searchTerm),
-  );
-  renderTasks(filteredTasks);
+  applyFilters();
 }
 
 function changeTaskStatus(id) {
@@ -166,12 +174,6 @@ function changeTaskStatus(id) {
     task.completed = !task.completed;
     localStorage.setItem("tasks", JSON.stringify(tasks));
 
-    const searchTerm = document
-      .getElementById("search-input")
-      .value.toLowerCase();
-    const filteredTasks = tasks.filter((task) =>
-      task.title.toLowerCase().includes(searchTerm),
-    );
-    renderTasks(filteredTasks);
+    applyFilters();
   }
 }
