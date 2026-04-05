@@ -1,6 +1,40 @@
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
+  addTask();
 });
+
+let tasks = [];
+
+function addTask() {
+  const form = document.getElementById("task-form");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById("task-title").value;
+    const priority = document.getElementById("task-priority").value;
+    const time = parseFloat(document.getElementById("task-time").value);
+
+    let taskType;
+    if (time < 2) taskType = "Quick Tasks";
+    else taskType = "Long Tasks";
+
+    const newTask = {
+      id: Date.now(),
+      title,
+      priority,
+      time,
+      completed: false,
+      taskType,
+    };
+
+    tasks.push(newTask);
+
+    console.log(newTask);
+
+    form.reset();
+  });
+}
 
 function initTheme() {
   const themeToggle = document.getElementById("theme-toggle");
