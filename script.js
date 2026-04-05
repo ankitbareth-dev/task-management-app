@@ -2,6 +2,16 @@ document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   addTask();
   loadTasks();
+
+  const searchInput = document.getElementById("search-input");
+  searchInput.addEventListener("input", (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+
+    const filteredTasks = tasks.filter((task) =>
+      task.title.toLowerCase().includes(searchTerm),
+    );
+    renderTasks(filteredTasks);
+  });
 });
 
 let tasks = [];
@@ -31,6 +41,51 @@ function initTheme() {
   });
 }
 
+function renderTasks(data) {
+  const listContainer = document.getElementById("task-list-container");
+
+  if (data.length === 0) {
+    listContainer.innerHTML = `
+      <div class="empty-msg">
+        <span>No matching tasks found</span>
+      </div>
+    `;
+    return;
+  }
+
+  const html = data
+    .map(
+      (task) => `
+    <li class="task-item">
+      <div class="task-info">
+        <h4>${task.title}</h4>
+        <div class="task-meta-group">
+          <span class="badge status-badge ${task.completed ? "completed" : "pending"}">
+            ${task.completed ? "Completed" : "Pending"}
+          </span>
+          <span class="badge badge-cat">${task.taskType}</span>
+          <span class="badge badge-priority ${task.priority}">${task.priority}</span>
+          <span class="badge time-badge">
+            <i class="fa-regular fa-clock"></i> ${task.time}h
+          </span>
+        </div>
+      </div>
+      <div class="task-actions">
+        <button class="btn-action btn-complete" onclick="changeTaskStatus(${task.id})" title="Mark Complete">
+          <i class="fa-solid fa-check"></i>
+        </button>
+        <button class="btn-action btn-delete" onclick="deleteTask(${task.id})" title="Delete Task">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </li>
+  `,
+    )
+    .join("");
+
+  listContainer.innerHTML = html;
+}
+
 function loadTasks() {
   const listContainer = document.getElementById("task-list-container");
 
@@ -45,43 +100,9 @@ function loadTasks() {
     const storedTasks = localStorage.getItem("tasks");
     if (storedTasks) {
       tasks = JSON.parse(storedTasks);
-      const html = tasks
-        .map(
-          (task) => `
-        <li class="task-item">
-          <div class="task-info">
-            <h4>${task.title}</h4>
-            <div class="task-meta-group">
-              <span class="badge status-badge ${task.completed ? "completed" : "pending"}">
-                ${task.completed ? "Completed" : "Pending"}
-              </span>
-              <span class="badge badge-cat">${task.taskType}</span>
-              <span class="badge badge-priority ${task.priority}">${task.priority}</span>
-              <span class="badge time-badge">
-                <i class="fa-regular fa-clock"></i> ${task.time}h
-              </span>
-            </div>
-          </div>
-          <div class="task-actions">
-            <button class="btn-action btn-complete" onclick="changeTaskStatus(${task.id})" title="Mark Complete">
-              <i class="fa-solid fa-check"></i>
-            </button>
-            <button class="btn-action btn-delete" onclick="deleteTask(${task.id})" title="Delete Task">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </div>
-        </li>
-      `,
-        )
-        .join("");
-
-      listContainer.innerHTML = html;
+      renderTasks(tasks);
     } else {
-      listContainer.innerHTML = `
-        <div class="empty-msg">
-          <span>No task has been added</span>
-        </div>
-      `;
+      renderTasks([]);
     }
   }, 1000);
 }
@@ -111,10 +132,14 @@ function addTask() {
 
     tasks.push(newTask);
     localStorage.setItem("tasks", JSON.stringify(tasks));
-    loadTasks();
+
+    document.getElementById("search-input").value = "";
+
+    renderTasks(tasks);
     form.reset();
   });
 }
+
 function deleteTask(id) {
   tasks = tasks.filter((task) => task.id !== id);
   if (tasks.length === 0) {
@@ -122,7 +147,14 @@ function deleteTask(id) {
   } else {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }
-  loadTasks();
+
+  const searchTerm = document
+    .getElementById("search-input")
+    .value.toLowerCase();
+  const filteredTasks = tasks.filter((task) =>
+    task.title.toLowerCase().includes(searchTerm),
+  );
+  renderTasks(filteredTasks);
 }
 
 function changeTaskStatus(id) {
@@ -133,6 +165,13 @@ function changeTaskStatus(id) {
   if (task) {
     task.completed = !task.completed;
     localStorage.setItem("tasks", JSON.stringify(tasks));
-    loadTasks();
+
+    const searchTerm = document
+      .getElementById("search-input")
+      .value.toLowerCase();
+    const filteredTasks = tasks.filter((task) =>
+      task.title.toLowerCase().includes(searchTerm),
+    );
+    renderTasks(filteredTasks);
   }
 }
