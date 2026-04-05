@@ -6,6 +6,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
 let tasks = [];
 
+function initTheme() {
+  const themeToggle = document.getElementById("theme-toggle");
+  const body = document.body;
+
+  const savedTheme = localStorage.getItem("theme");
+
+  if (savedTheme === "light") {
+    body.classList.remove("dark");
+    themeToggle.checked = false;
+  } else {
+    body.classList.add("dark");
+    themeToggle.checked = true;
+  }
+
+  themeToggle.addEventListener("change", () => {
+    if (themeToggle.checked) {
+      body.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      body.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  });
+}
+
 function loadTasks() {
   const listContainer = document.getElementById("task-list-container");
 
@@ -41,7 +66,7 @@ function loadTasks() {
             <button class="btn-action btn-complete" title="Mark Complete">
               <i class="fa-solid fa-check"></i>
             </button>
-            <button class="btn-action btn-delete" title="Delete Task">
+            <button class="btn-action btn-delete" onclick="deleteTask(${task.id})" title="Delete Task">
               <i class="fa-solid fa-trash"></i>
             </button>
           </div>
@@ -90,28 +115,12 @@ function addTask() {
     form.reset();
   });
 }
-
-function initTheme() {
-  const themeToggle = document.getElementById("theme-toggle");
-  const body = document.body;
-
-  const savedTheme = localStorage.getItem("theme");
-
-  if (savedTheme === "light") {
-    body.classList.remove("dark");
-    themeToggle.checked = false;
+function deleteTask(id) {
+  tasks = tasks.filter((task) => task.id !== id);
+  if (tasks.length === 0) {
+    localStorage.removeItem("tasks");
   } else {
-    body.classList.add("dark");
-    themeToggle.checked = true;
+    localStorage.setItem("tasks", JSON.stringify(tasks));
   }
-
-  themeToggle.addEventListener("change", () => {
-    if (themeToggle.checked) {
-      body.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      body.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  });
+  loadTasks();
 }
