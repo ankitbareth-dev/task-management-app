@@ -29,9 +29,7 @@ function addTask() {
     };
 
     tasks.push(newTask);
-
-    console.log(newTask);
-
+    localStorage.setItem("tasks", JSON.stringify(tasks));
     form.reset();
   });
 }
