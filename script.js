@@ -63,7 +63,7 @@ function loadTasks() {
             </div>
           </div>
           <div class="task-actions">
-            <button class="btn-action btn-complete" title="Mark Complete">
+            <button class="btn-action btn-complete" onclick="changeTaskStatus(${task.id})" title="Mark Complete">
               <i class="fa-solid fa-check"></i>
             </button>
             <button class="btn-action btn-delete" onclick="deleteTask(${task.id})" title="Delete Task">
@@ -123,4 +123,14 @@ function deleteTask(id) {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }
   loadTasks();
+}
+
+function changeTaskStatus(id) {
+  const task = tasks.find((t) => t.id === id);
+
+  if (task) {
+    task.completed = !task.completed;
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    loadTasks();
+  }
 }
