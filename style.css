@@ -560,7 +560,7 @@ select:focus {
     flex: none;
   }
   .task-list-wrapper {
-    padding: 0 1rem;
+    padding: 1rem 1rem;
   }
 
   .task-controls {

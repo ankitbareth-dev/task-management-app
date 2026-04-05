@@ -7,11 +7,52 @@ document.addEventListener("DOMContentLoaded", () => {
   const priorityInput = document.getElementById("filter-priority");
 
   searchInput.addEventListener("input", applyFilters);
-
   priorityInput.addEventListener("change", applyFilters);
 });
 
 let tasks = [];
+
+function updateStats() {
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter((t) => t.completed).length;
+  const totalTime = tasks.reduce((acc, task) => acc + task.time, 0);
+
+  const completedTime = tasks
+    .filter((t) => t.completed)
+    .reduce((acc, task) => acc + task.time, 0);
+
+  let score = 0;
+  if (totalTime > 0) {
+    score = Math.round((completedTime / totalTime) * 100);
+  }
+
+  let statusText = "Poor";
+  let color = "var(--color-danger)";
+
+  if (score >= 70) {
+    statusText = "Excellent";
+    color = "var(--color-success)";
+  } else if (score >= 40) {
+    statusText = "Average";
+    color = "var(--color-warning)";
+  }
+
+  const totalEl = document.getElementById("stat-total");
+  const completedEl = document.getElementById("stat-completed");
+  const timeEl = document.getElementById("stat-time");
+  const scoreEl = document.getElementById("stat-score");
+  const statusEl = document.getElementById("stat-status");
+
+  if (totalEl) totalEl.innerText = totalTasks;
+  if (completedEl) completedEl.innerText = completedTasks;
+  if (timeEl) timeEl.innerText = totalTime + "h";
+  if (scoreEl) scoreEl.innerText = score + "%";
+
+  if (statusEl) {
+    statusEl.innerText = statusText;
+    statusEl.style.color = color;
+  }
+}
 
 function applyFilters() {
   const searchValue = document
@@ -114,8 +155,10 @@ function loadTasks() {
     if (storedTasks) {
       tasks = JSON.parse(storedTasks);
       applyFilters();
+      updateStats();
     } else {
       renderTasks([]);
+      updateStats();
     }
   }, 1000);
 }
@@ -150,6 +193,7 @@ function addTask() {
     document.getElementById("filter-priority").value = "all";
 
     applyFilters();
+    updateStats();
     form.reset();
   });
 }
@@ -163,6 +207,7 @@ function deleteTask(id) {
   }
 
   applyFilters();
+  updateStats();
 }
 
 function changeTaskStatus(id) {
@@ -175,5 +220,6 @@ function changeTaskStatus(id) {
     localStorage.setItem("tasks", JSON.stringify(tasks));
 
     applyFilters();
+    updateStats();
   }
 }
