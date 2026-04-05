@@ -128,6 +128,8 @@ function deleteTask(id) {
 function changeTaskStatus(id) {
   const task = tasks.find((t) => t.id === id);
 
+  if (task.completed === true) return;
+
   if (task) {
     task.completed = !task.completed;
     localStorage.setItem("tasks", JSON.stringify(tasks));
