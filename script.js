@@ -174,8 +174,11 @@ function addTask() {
     const time = parseFloat(document.getElementById("task-time").value);
 
     let taskType;
-    if (time < 2) taskType = "Quick Tasks";
-    else taskType = "Long Tasks";
+    if (time <= 2) {
+      taskType = "Quick Tasks";
+    } else {
+      taskType = "Long Tasks";
+    }
 
     const newTask = {
       id: Date.now(),
@@ -186,15 +189,26 @@ function addTask() {
       taskType,
     };
 
-    tasks.push(newTask);
-    localStorage.setItem("tasks", JSON.stringify(tasks));
+    const btn = form.querySelector("button[type='submit']");
+    const originalBtnContent = btn.innerHTML;
 
-    document.getElementById("search-input").value = "";
-    document.getElementById("filter-priority").value = "all";
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Saving task...`;
 
-    applyFilters();
-    updateStats();
-    form.reset();
+    setTimeout(() => {
+      tasks.push(newTask);
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+
+      document.getElementById("search-input").value = "";
+      document.getElementById("filter-priority").value = "all";
+
+      applyFilters();
+      updateStats();
+      form.reset();
+
+      btn.disabled = false;
+      btn.innerHTML = originalBtnContent;
+    }, 1500);
   });
 }
 
