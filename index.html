@@ -76,6 +76,53 @@
         </div>
       </div>
     </section>
+
+    <section class="add-task-wrapper">
+      <div class="add-task-card">
+        <h2>Add New Task</h2>
+        <form id="task-form" class="add-task-form">
+          <div class="form-group">
+            <label for="task-title">Task Title</label>
+            <input
+              type="text"
+              id="task-title"
+              placeholder="e.g. Design Homepage UI"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="task-priority">Priority</label>
+            <div class="select-wrapper">
+              <select id="task-priority">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="task-time">Time (Hours)</label>
+            <input
+              type="number"
+              id="task-time"
+              placeholder="0"
+              min="1"
+              required
+            />
+          </div>
+
+          <div class="form-group form-submit">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn-primary">
+              <i class="fa-solid fa-plus"></i> Add Task
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
     <script src="script.js"></script>
   </body>
 </html>
