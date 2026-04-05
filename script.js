@@ -1,9 +1,65 @@
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   addTask();
+  loadTasks();
 });
 
 let tasks = [];
+
+function loadTasks() {
+  const listContainer = document.getElementById("task-list-container");
+
+  listContainer.innerHTML = `
+    <div class="loading-msg">
+      <i class="fa-solid fa-circle-notch"></i>
+      <span>Loading tasks...</span>
+    </div>
+  `;
+
+  setTimeout(() => {
+    const storedTasks = localStorage.getItem("tasks");
+    if (storedTasks) {
+      tasks = JSON.parse(storedTasks);
+      const html = tasks
+        .map(
+          (task) => `
+        <li class="task-item">
+          <div class="task-info">
+            <h4>${task.title}</h4>
+            <div class="task-meta-group">
+              <span class="badge status-badge ${task.completed ? "completed" : "pending"}">
+                ${task.completed ? "Completed" : "Pending"}
+              </span>
+              <span class="badge badge-cat">${task.taskType}</span>
+              <span class="badge badge-priority ${task.priority}">${task.priority}</span>
+              <span class="badge time-badge">
+                <i class="fa-regular fa-clock"></i> ${task.time}h
+              </span>
+            </div>
+          </div>
+          <div class="task-actions">
+            <button class="btn-action btn-complete" title="Mark Complete">
+              <i class="fa-solid fa-check"></i>
+            </button>
+            <button class="btn-action btn-delete" title="Delete Task">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </li>
+      `,
+        )
+        .join("");
+
+      listContainer.innerHTML = html;
+    } else {
+      listContainer.innerHTML = `
+        <div class="empty-msg">
+          <span>No task has been added</span>
+        </div>
+      `;
+    }
+  }, 1000);
+}
 
 function addTask() {
   const form = document.getElementById("task-form");
@@ -30,6 +86,7 @@ function addTask() {
 
     tasks.push(newTask);
     localStorage.setItem("tasks", JSON.stringify(tasks));
+    loadTasks();
     form.reset();
   });
 }

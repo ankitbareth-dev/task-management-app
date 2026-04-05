@@ -585,3 +585,28 @@ select:focus {
     margin-top: 0.8rem;
   }
 }
+
+.loading-msg,
+.empty-msg {
+  text-align: center;
+  padding: 3rem;
+  width: 100%;
+  color: var(--text-secondary);
+}
+
+.loading-msg i {
+  font-size: 2rem;
+  color: var(--color-primary);
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+  display: block;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
